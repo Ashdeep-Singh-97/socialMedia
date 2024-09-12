@@ -2,15 +2,25 @@
 
 import React, { useState } from 'react';
 import ErrorCard from '../components/Error';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 const SignUpForm: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  // const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleCustomAction = async () => {
     // Custom sign-up logic here
+    await axios.post("http://localhost:3000/api/user",
+      {
+        email,
+        password
+      }
+    );
+    router.push("/");
   };
 
   return (
@@ -47,7 +57,7 @@ const SignUpForm: React.FC = () => {
               required
             />
           </div>
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
             <input
               type="password"
@@ -56,7 +66,7 @@ const SignUpForm: React.FC = () => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required
             />
-          </div>
+          </div> */}
           <button
             onClick={handleCustomAction}
             className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
