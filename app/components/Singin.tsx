@@ -23,7 +23,9 @@ const SignInForm = () => {
 
       if (token) {
         localStorage.setItem('authToken', token);
-        router.push("/");
+        localStorage.setItem('email', email); // Store email
+        localStorage.setItem('username', email.split('@')[0]);
+        router.push("/user/home");
       } else {
         setError('Token not received');
       }

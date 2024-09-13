@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     const { valid, errors } = await validateUser(body);
 
     if (!valid) {
-        console.log("Validation failed route.ts : line 14",{errors});
+        console.log("Validation failed route.ts : line 14");
         return NextResponse.json({ errors }, { status: 400 });
     }
 

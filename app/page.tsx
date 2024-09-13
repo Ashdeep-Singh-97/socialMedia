@@ -1,3 +1,4 @@
+// HomePage.tsx
 import React from 'react';
 import styles from './page.module.css'; // Import the CSS module
 
@@ -18,6 +19,12 @@ const HomePage: React.FC = () => {
             className="block text-center text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded transition duration-200"
           >
             Sign In
+          </a>
+          <a
+            href="/guest/home"
+            className="block text-center text-white bg-green-500 hover:bg-green-600 px-4 py-2 rounded transition duration-200"
+          >
+            Join as Guest
           </a>
         </div>
       </div>
