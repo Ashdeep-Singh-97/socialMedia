@@ -2,30 +2,43 @@
 
 import React, { useState } from 'react';
 import ErrorCard from '../components/Error';
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 const SignInForm = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   // Custom function to handle the sign-in action
   const handleCustomAction = async () => {
-    // Uncomment and implement sign-in logic as needed
-    /*
+    const action = 'signin'; // or 'signin', depending on what you're doing
     try {
-      const response = await axios.post('http://localhost:3500/api/v1/signin', { email, password });
-      const token = response.data.token;
-      if (response.status === 200) {
-        Cookies.set('token', `Bearer ${token}`);
-        console.log('Sign in successful');
-        navigateToHome(email);
+      // Make the POST request with action included
+      const response = await axios.post("http://localhost:3000/api/user", {
+        action,
+        email,
+        password
+      });
+
+      // Extract the token from the response
+      const token = response.data; // Since the response is just the token
+
+      if (token) {
+        // Store the token in localStorage
+        localStorage.setItem('authToken', token);
+
+        // Redirect after successful signup/signin
+        router.push("/");
       } else {
-        setError('Sign in failed. Please try again.');
+        // Handle the case where there is no token in the response
+        console.error('Token not received');
       }
     } catch (error) {
-      setError('An error occurred. Please try again later.');
+      console.error('Error during signup/signin:', error);
+      // Handle the error (e.g., show an error message to the user)
     }
-    */
   };
 
   return (

@@ -13,20 +13,39 @@ const SignUpForm: React.FC = () => {
   const router = useRouter();
 
   const handleCustomAction = async () => {
-    // Custom sign-up logic here
-    await axios.post("http://localhost:3000/api/user",
-      {
+    const action = 'signup'; // or 'signin', depending on what you're doing
+    try {
+      // Make the POST request with action included
+      const response = await axios.post("http://localhost:3000/api/user", {
+        action,
         email,
         password
+      });
+
+      // Extract the token from the response
+      const token = response.data; // Since the response is just the token
+
+      if (token) {
+        // Store the token in localStorage
+        localStorage.setItem('authToken', token);
+
+        // Redirect after successful signup/signin
+        router.push("/");
+      } else {
+        // Handle the case where there is no token in the response
+        console.error('Token not received');
       }
-    );
-    router.push("/");
+    } catch (error) {
+      console.error('Error during signup/signin:', error);
+      // Handle the error (e.g., show an error message to the user)
+    }
   };
 
+
   return (
-    <div 
-      className="h-screen flex items-center justify-center" 
-      style={{ 
+    <div
+      className="h-screen flex items-center justify-center"
+      style={{
         backgroundImage: `url('/images/gradient.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
