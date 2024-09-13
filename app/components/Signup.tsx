@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 const SignUpForm: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  // Uncomment if you plan to use confirmPassword
   // const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -15,15 +16,14 @@ const SignUpForm: React.FC = () => {
   const handleCustomAction = async () => {
     const action = 'signup'; // or 'signin', depending on what you're doing
     try {
-      // Make the POST request with action included
-      const response = await axios.post("http://localhost:3000/api/user", {
+      const response = await axios.post("/api/user", {
         action,
         email,
         password
       });
 
       // Extract the token from the response
-      const token = response.data; // Since the response is just the token
+      const { token } = response.data;
 
       if (token) {
         // Store the token in localStorage
@@ -33,14 +33,19 @@ const SignUpForm: React.FC = () => {
         router.push("/");
       } else {
         // Handle the case where there is no token in the response
-        console.error('Token not received');
+        setError('Token not received');
       }
     } catch (error) {
-      console.error('Error during signup/signin:', error);
-      // Handle the error (e.g., show an error message to the user)
+      if (axios.isAxiosError(error)) {
+        // Extract and display error message from the response
+        const errorMessage = error.response?.data?.message || 'Error during signup';
+        setError(errorMessage);
+      } else {
+        // Handle unexpected errors
+        setError('Unexpected error occurred');
+      }
     }
   };
-
 
   return (
     <div
@@ -76,6 +81,7 @@ const SignUpForm: React.FC = () => {
               required
             />
           </div>
+          {/* Uncomment if you are using confirmPassword */}
           {/* <div>
             <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
             <input

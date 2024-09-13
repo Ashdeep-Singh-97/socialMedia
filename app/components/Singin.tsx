@@ -11,44 +11,42 @@ const SignInForm = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  // Custom function to handle the sign-in action
   const handleCustomAction = async () => {
-    const action = 'signin'; // or 'signin', depending on what you're doing
     try {
-      // Make the POST request with action included
-      const response = await axios.post("http://localhost:3000/api/user", {
-        action,
+      const response = await axios.post("/api/user", {
+        action: 'signin',
         email,
         password
       });
 
-      // Extract the token from the response
-      const token = response.data; // Since the response is just the token
+      const { token } = response.data;
 
       if (token) {
-        // Store the token in localStorage
         localStorage.setItem('authToken', token);
-
-        // Redirect after successful signup/signin
         router.push("/");
       } else {
-        // Handle the case where there is no token in the response
-        console.error('Token not received');
+        setError('Token not received');
       }
     } catch (error) {
-      console.error('Error during signup/signin:', error);
-      // Handle the error (e.g., show an error message to the user)
+      if (axios.isAxiosError(error)) {
+        // Extract error message from the response
+        const errorMessage = error.response?.data?.message || 'Error during signin';
+        setError(errorMessage);
+      } else {
+        // Handle unexpected errors
+        setError('Unexpected error occurred');
+      }
     }
   };
 
   return (
     <div className="h-screen flex items-center justify-center" 
-    style={{ 
-      backgroundImage: `url('/images/gradient.jpg')`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-    }}>
+      style={{ 
+        backgroundImage: `url('/images/gradient.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}>
       <div className="max-w-md w-full p-8 bg-white shadow-md rounded-lg">
         {error && <ErrorCard message={error} onClose={() => setError(null)} />}
         <h2 className="text-2xl font-bold mb-6">Sign In</h2>
