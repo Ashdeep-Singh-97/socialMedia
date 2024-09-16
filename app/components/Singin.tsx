@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import ErrorCard from '../components/Error';
-import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
-const SignInForm = () => {
+const SignInForm: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
@@ -15,27 +15,25 @@ const SignInForm = () => {
     try {
       const response = await axios.post("/api/user", {
         action: 'signin',
-        email,
+        identifier: email, // Use identifier for both email and username
         password
       });
 
-      const { token } = response.data;
+      const { token, username, email: userEmail } = response.data;
 
       if (token) {
         localStorage.setItem('authToken', token);
-        localStorage.setItem('email', email); // Store email
-        localStorage.setItem('username', email.split('@')[0]);
+        localStorage.setItem('username', username);
+        localStorage.setItem('email', userEmail);
         router.push("/user/home");
       } else {
         setError('Token not received');
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        // Extract error message from the response
         const errorMessage = error.response?.data?.message || 'Error during signin';
         setError(errorMessage);
       } else {
-        // Handle unexpected errors
         setError('Unexpected error occurred');
       }
     }

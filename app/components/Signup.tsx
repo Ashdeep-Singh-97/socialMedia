@@ -1,15 +1,17 @@
-"use client";
-
+// pages/sign-up.tsx
 import React, { useState } from 'react';
 import ErrorCard from '../components/Error';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import PasswordRequirements from '../components/PasswordRequirement'; // Adjust path as needed
 
 const SignUpForm: React.FC = () => {
+  const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [showRequirements, setShowRequirements] = useState<boolean>(false);
   const router = useRouter();
 
   const handleCustomAction = async () => {
@@ -21,8 +23,9 @@ const SignUpForm: React.FC = () => {
     try {
       const response = await axios.post("/api/user", {
         action: 'signup',
+        username,
         email,
-        password,
+        password
       });
 
       const { token } = response.data;
@@ -30,7 +33,7 @@ const SignUpForm: React.FC = () => {
       if (token) {
         localStorage.setItem('authToken', token);
         localStorage.setItem('email', email);
-        localStorage.setItem('username', email.split('@')[0]);
+        localStorage.setItem('username', username);
         router.push("/user/home");
       } else {
         setError('Token not received');
@@ -48,7 +51,7 @@ const SignUpForm: React.FC = () => {
 
   return (
     <div
-      className="h-screen flex items-center justify-center"
+      className="h-screen flex items-center justify-center relative"
       style={{
         backgroundImage: `url('/images/gradient.jpg')`,
         backgroundSize: 'cover',
@@ -62,6 +65,13 @@ const SignUpForm: React.FC = () => {
         <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
           <div>
             <label className="block text-sm font-medium text-gray-700">Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              required
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -73,15 +83,18 @@ const SignUpForm: React.FC = () => {
               required
             />
           </div>
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-700">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onFocus={() => setShowRequirements(true)}
+              onBlur={() => setShowRequirements(false)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required
             />
+            {showRequirements && <PasswordRequirements />}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
