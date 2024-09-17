@@ -43,7 +43,7 @@ const Navbar = ({ isLoggedIn }: NavbarProps) => {
             </Link>
           </li>
           <li>
-            <Link href="/guest/contact" onClick={handleClick} className="text-white hover:text-pink-800">
+            <Link href="/user/post" onClick={handleClick} className="text-white hover:text-pink-800">
               Post
             </Link>
           </li>

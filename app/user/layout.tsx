@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 
 export default function GuestHomeLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Layout isLoggedIn={false}>
+    <Layout isLoggedIn={true}>
       {children}
     </Layout>
   );

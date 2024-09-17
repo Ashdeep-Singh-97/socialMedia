@@ -5,13 +5,14 @@ import Link from 'next/link';
 
 interface LayoutProps {
   children: ReactNode; // Defines the type for children prop
+  isLoggedIn: boolean; // Defines the type for authentication status
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children, isLoggedIn }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
       <header>
-        <Navbar isLoggedIn={false} /> {/* Pass true/false based on authentication status */}
+        <Navbar isLoggedIn={isLoggedIn} /> {/* Pass true/false based on authentication status */}
       </header>
       <main className="flex-1 p-4">
         {children} {/* Render the content passed as children */}
