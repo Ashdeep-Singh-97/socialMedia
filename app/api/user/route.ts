@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
 
         const token = jwt.sign({ userId: newUser.id }, 'your_jwt_secret'); // Added expiration for security
         console.log("route.ts 42", token);
-        return NextResponse.json({ token, username: newUser.username, email: newUser.email });
+        return NextResponse.json({ token, username: newUser.username, email: newUser.email, userId:newUser.id });
     } else if (action === 'signin') {
         // Handle user signin
         const user = await client.user.findFirst({
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
         // Create a JWT token
         const token = jwt.sign({ userId: user.id }, 'your_jwt_secret'); // Added expiration for security
 
-        return NextResponse.json({ token, username: user.username, email: user.email });
+        return NextResponse.json({ token, username: user.username, email: user.email, userId:user.id });
     } else {
         return NextResponse.json({ message: "Invalid action" }, { status: 400 });
     }

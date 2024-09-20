@@ -19,12 +19,13 @@ const SignInForm: React.FC = () => {
         password
       });
 
-      const { token, username, email: userEmail } = response.data;
+      const { token, username, email: userEmail, userId } = response.data;
 
       if (token) {
         localStorage.setItem('authToken', token);
         localStorage.setItem('username', username);
         localStorage.setItem('email', userEmail);
+        localStorage.setItem('userId',userId);
         router.push("/user/home");
       } else {
         setError('Token not received');

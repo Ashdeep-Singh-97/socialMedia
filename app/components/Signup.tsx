@@ -28,12 +28,13 @@ const SignUpForm: React.FC = () => {
         password
       });
 
-      const { token } = response.data;
+      const { token, userId } = response.data;
 
       if (token) {
         localStorage.setItem('authToken', token);
         localStorage.setItem('email', email);
         localStorage.setItem('username', username);
+        localStorage.setItem('userId',userId);
         router.push("/user/home");
       } else {
         setError('Token not received');
