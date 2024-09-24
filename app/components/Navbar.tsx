@@ -28,13 +28,13 @@ const Navbar = ({ isLoggedIn }: NavbarProps) => {
       <nav className="bg-pink-400 p-4">
         <ul className="flex space-x-4 justify-center">
           <li>
-            <Link href="/guest/home" onClick={handleClick} className="text-white hover:text-pink-800">
-              Friends
+            <Link href="/user/home" onClick={handleClick} className="text-white hover:text-pink-800">
+              Home
             </Link>
           </li>
           <li>
-            <Link href="/guest/about" onClick={handleClick} className="text-white hover:text-pink-800">
-              Messages
+            <Link href="/user/friend" onClick={handleClick} className="text-white hover:text-pink-800">
+              friend
             </Link>
           </li>
           <li>

@@ -20,7 +20,8 @@ model User {
   likes             Like[]      // Relation to likes
   sentRequests      Friendship[] @relation("SentRequests")
   receivedRequests  Friendship[] @relation("ReceivedRequests")
-  friends           Friendship[] @relation("UserFriends")
+  friends           User[]       @relation("UserFriends")
+  friendOf         User[]       @relation("UserFriends")
   messagesSent      Message[] @relation("MessagesSent") // Relation to messages sent by this user
   messagesReceived  Message[] @relation("MessagesReceived") // Relation to messages received by this user
   createdAt         DateTime    @default(now())
@@ -68,8 +69,6 @@ model Friendship {
   status     FriendshipStatus // Status of the friendship request
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
-  User User[] @relation("UserFriends")
 }
 
 model Message {
