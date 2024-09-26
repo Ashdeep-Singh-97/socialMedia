@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import Link from 'next/link'; // Import Link from next/link
 
 export interface Friend {
     id: number;
     username: string;
-    email: string; // Adjust this based on the API response
-    profileImageUrl?: string; // Optional, if not provided
+    email: string;
+    profileImageUrl?: string;
     requestStatus?: 'none' | 'pending' | 'sent';
 }
 
@@ -73,10 +74,9 @@ const FriendPage = () => {
         }
 
         try {
-            console.log("sxdcfvgbhnjmk dcfvgbhnjmk dfvgbhnj",searchTerm);
             const response = await axios.post(`/api/auth/search?searchTerm=${searchTerm}`, {
                 userId: userId,
-            });            
+            });
             setSuggestions(response.data);
             setNoMatches(response.data.length === 0);
         } catch (error) {
@@ -98,9 +98,9 @@ const FriendPage = () => {
             );
 
             alert('Friend request sent!');
-        } catch (error : any) {
+        } catch (error: any) {
             if (error.response && error.response.status === 400) {
-                alert(error.response.data.error); // Show alert with the error message
+                alert(error.response.data.error);
             } else {
                 console.error("Unexpected error:", error);
                 alert("An unexpected error occurred. Please try again.");
@@ -116,8 +116,8 @@ const FriendPage = () => {
             });
 
             alert('Friend request accepted!');
-            await fetchFriends(); // Refresh the friends list after accepting
-            await fetchFriendRequests(); // Refresh the friend requests
+            await fetchFriends();
+            await fetchFriendRequests();
         } catch (error) {
             console.error('Error accepting friend request:', error);
         }
@@ -131,9 +131,31 @@ const FriendPage = () => {
             });
 
             alert('Friend request rejected!');
-            await fetchFriendRequests(); // Refresh the friend requests
+            await fetchFriendRequests();
         } catch (error) {
             console.error('Error rejecting friend request:', error);
+        }
+    };
+
+    const unfriend = async (friendId: number) => {
+        try {
+            const response = await fetch('/api/auth/unfriend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId, friendId })
+            });
+
+            if (!response.ok) {
+                throw new Error('Error unfriending user');
+            }
+    
+            const data = await response.json();
+            alert(data.message);
+            await fetchFriends(); // Refresh the friends list
+        } catch (error) {
+            console.error('Error unfriending:', error);
         }
     };
 
@@ -188,14 +210,25 @@ const FriendPage = () => {
             {loadingFriends ? (
                 <p>Loading friends...</p>
             ) : (
-                <>
+                <> 
                     <h2 className="text-2xl font-semibold mb-2">Your Friends</h2>
                     <ul className="border border-gray-300 rounded-lg">
-                        {friends.map((friend) => (
-                            <li key={friend.id} className="flex justify-between p-2 border-b border-gray-200">
-                                <span>{friend.username} - {friend.email}</span>
-                            </li>
-                        ))}
+                    {friends.map((friend) => (
+    <li key={friend.id} className="flex justify-between p-2 border-b border-gray-200">
+        <span>{friend.username} - {friend.email}</span>
+        <div>
+            <Link href={`/user/chat?friendId=${friend.id}`} className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mr-2">
+                Chat
+            </Link>
+            <button
+                onClick={() => unfriend(friend.id)}
+                className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            >
+                Unfriend
+            </button>
+        </div>
+    </li>
+))}
                     </ul>
 
                     {loadingRequests ? (
