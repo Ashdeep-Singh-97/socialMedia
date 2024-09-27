@@ -82,6 +82,13 @@ model Message {
   updatedAt  DateTime @updatedAt
 }
 
+model Block {
+  id         Int      @id @default(autoincrement())
+  blockerId  Int      // User who is blocking
+  blockedId  Int      // User who is blocked
+  createdAt  DateTime @default(now())
+}
+
 // Enum to represent friendship statuses
 enum FriendshipStatus {
   PENDING

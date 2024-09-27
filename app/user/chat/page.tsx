@@ -1,6 +1,6 @@
-// /pages/user/chat.tsx
-"use client"
+"use client";
 
+import Sidebar from '@/app/components/Sidebar';
 import { useEffect, useState } from 'react';
 
 interface Message {
@@ -14,21 +14,49 @@ const Chat: React.FC = () => {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>('');
     const [friendId, setFriendId] = useState<number | null>(null);
+    const [isBlocked, setIsBlocked] = useState<boolean>(false);
+    const [isBlockingUser, setIsBlockingUser] = useState<boolean>(false);
 
     // Fetch friendId from URL parameters
     useEffect(() => {
         const query = new URLSearchParams(window.location.search);
         const friendIdParam = query.get('friendId');
-        console.log(friendIdParam);
         if (friendIdParam) {
-            setFriendId(parseInt(friendIdParam)); // Set friendId state
+            setFriendId(parseInt(friendIdParam));
         }
     }, []);
+
+    useEffect(() => {
+        const fetchFriendshipStatus = async () => {
+            if (friendId === null) return;
+    
+            try {
+                const response = await fetch(`/api/auth/friendshipStatus?userId=${userId}&friendId=${friendId}`);
+                const data = await response.json();
+                
+                // Set the state based on the API response
+                setIsBlocked(data.isBlocked || data.isBlockedByUser);
+                setIsBlockingUser(data.isBlockingUser);
+            } catch (error) {
+                console.error('Error fetching friendship status:', error);
+            }
+        };
+    
+        fetchFriendshipStatus();
+    }, [friendId, userId]);
+    
+    // Debugging for state values
+    useEffect(() => {
+        console.log('Updated Is Blocked:', isBlocked);
+        console.log('Updated Is Blocking User:', isBlockingUser);
+    }, [isBlocked, isBlockingUser]);
+    
+    
 
     // Fetch chat history whenever friendId changes
     useEffect(() => {
         const fetchChatHistory = async () => {
-            if (friendId === null) return; // If friendId is not available
+            if (friendId === null || isBlocked) return;
 
             try {
                 const response = await fetch(`/api/auth/history?userId=${userId}&friendId=${friendId}`);
@@ -41,10 +69,10 @@ const Chat: React.FC = () => {
         };
 
         fetchChatHistory();
-    }, [friendId, userId]);
+    }, [friendId, userId, isBlocked]);
 
     const handleSend = async () => {
-        if (!input.trim()) return;
+        if (!input.trim() || isBlocked) return;
 
         const newMessage: Message = { id: Date.now(), content: input, senderId: userId };
         setMessages(prevMessages => [...prevMessages, newMessage]);
@@ -57,35 +85,117 @@ const Chat: React.FC = () => {
         });
     };
 
+    const handleBlock = async () => {
+        if (friendId === null) return;
+
+        try {
+            const response = await fetch('/api/auth/blockUser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, friendId }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message);
+                setIsBlocked(true);
+                setIsBlockingUser(true);
+            } else {
+                alert(data.error || 'Failed to block user.');
+            }
+        } catch (error) {
+            console.error('Error blocking user:', error);
+            alert('An error occurred while blocking the user.');
+        }
+    };
+
+    const handleUnblock = async () => {
+        if (friendId === null) return;
+
+        try {
+            const response = await fetch('/api/auth/unblockUser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId, friendId }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                alert(data.message);
+                setIsBlocked(false);
+                setIsBlockingUser(false);
+            } else {
+                alert(data.error || 'Failed to unblock user.');
+            }
+        } catch (error) {
+            console.error('Error unblocking user:', error);
+            alert('An error occurred while unblocking the user.');
+        }
+    };
+
+    const isSendDisabled = isBlocked || (isBlockingUser && userId !== friendId);
+    const isUserBlocked = isBlocked && userId === friendId; // Check if the current user is blocked
+
     return (
-        <div className="flex flex-col h-screen max-w-4xl mx-auto p-6 bg-gray-100">
-            <h1 className="text-3xl font-bold mb-4">Chat</h1>
-            <div className="flex-1 overflow-y-auto border border-gray-300 rounded-lg p-4 bg-white">
-                {messages.map(message => (
-                    <div key={message.id} className={`mb-2 ${message.senderId === userId ? 'text-right' : 'text-left'}`}>
-                        <div className={`inline-block px-4 py-2 rounded-lg ${message.senderId === userId ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}>
-                            {message.content}
+        <div className="flex h-screen">
+            <Sidebar />
+            <div className="flex-1 flex flex-col p-6 bg-gray-100">
+                <div className="flex justify-between items-center mb-4">
+                    <h1 className="text-3xl font-bold">Chat</h1>
+                    {!isBlocked && !isBlockingUser && (
+                        <button
+                            onClick={handleBlock}
+                            className="bg-red-500 text-white px-4 rounded-lg hover:bg-red-600"
+                        >
+                            Block
+                        </button>
+                    )}
+                    {isBlockingUser && (
+                        <button
+                            onClick={handleUnblock}
+                            className="bg-green-500 text-white px-4 rounded-lg hover:bg-green-600"
+                        >
+                            Unblock
+                        </button>
+                    )}
+                </div>
+                {/* Show blocked message only if the user is blocked by the current user */}
+                {isBlocked && isBlockingUser &&(
+                    <div className="mb-4 text-red-500">User blocked. You can unblock them.</div>
+                )}
+                <div className="flex-1 overflow-y-auto border border-gray-300 rounded-lg p-4 bg-white mb-4">
+                    {messages.map(message => (
+                        <div key={message.id} className={`mb-2 ${message.senderId === userId ? 'text-right' : 'text-left'}`}>
+                            <div className={`inline-block px-4 py-2 rounded-lg ${message.senderId === userId ? 'bg-blue-500 text-white' : 'bg-gray-300 text-black'}`}>
+                                {message.content}
+                            </div>
                         </div>
+                    ))}
+                </div>
+                <div className="flex">
+                    <div className="flex-1">
+                        <input
+                            type="text"
+                            placeholder="Type your message..."
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            className="w-full border border-gray-300 p-2 rounded-lg"
+                            disabled={isSendDisabled}
+                        />
                     </div>
-                ))}
-            </div>
-            <div className="mt-4 flex">
-                <input
-                    type="text"
-                    placeholder="Type your message..."
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    className="flex-1 border border-gray-300 p-2 rounded-lg"
-                />
-                <button
-                    onClick={handleSend}
-                    className="ml-2 bg-blue-500 text-white px-4 rounded-lg hover:bg-blue-600"
-                >
-                    Send
-                </button>
+                    <button
+                        onClick={handleSend}
+                        className="ml-2 bg-blue-500 text-white px-4 rounded-lg hover:bg-blue-600"
+                        disabled={isSendDisabled}
+                    >
+                        Send
+                    </button>
+                </div>
             </div>
         </div>
     );
+    
+    
 };
 
 export default Chat;
