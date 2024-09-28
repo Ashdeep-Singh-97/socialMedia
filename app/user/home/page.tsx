@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from 'react';
+import PostList from '@/app/components/Posts'; // Ensure the path is correct based on your directory structure
 
 const UserHomePage: React.FC = () => {
   const [email, setEmail] = useState<string | null>(null);
@@ -29,6 +30,7 @@ const UserHomePage: React.FC = () => {
     <div className="p-8">
       <h1 className="text-2xl font-bold">Welcome, {username}</h1>
       <p className="text-lg">Your email: {email}</p>
+      <PostList userEmail={email} /> {/* Include the PostList component here */}
     </div>
   );
 };
