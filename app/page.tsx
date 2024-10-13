@@ -1,35 +1,70 @@
-// HomePage.tsx
-import React from 'react';
-import styles from './page.module.css'; // Import the CSS module
+"use client";
+
+import React, { useEffect, useRef, useState } from 'react';
+import Section1 from './Pages/Section1';
+import Section2 from './Pages/Section2';
+import LandingNavbar from './components/LandingNavbar';
 
 const HomePage: React.FC = () => {
-  return (
-    <div className={`${styles.background} flex items-center justify-center min-h-screen bg-gray-100`}>
-      <div className="w-full max-w-sm p-8 bg-white shadow-lg rounded-lg">
-        <h1 className="text-2xl font-semibold mb-6 text-center">Welcome</h1>
-        <div className="flex flex-col space-y-4">
-          <a
-            href="/signup"
-            className="block text-center text-white bg-orange-500 hover:bg-orange-600 px-4 py-2 rounded transition duration-200"
-          >
-            Sign Up
-          </a>
-          <a
-            href="/signin"
-            className="block text-center text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded transition duration-200"
-          >
-            Sign In
-          </a>
-          <a
-            href="/guest/home"
-            className="block text-center text-white bg-green-500 hover:bg-green-600 px-4 py-2 rounded transition duration-200"
-          >
-            Join as Guest
-          </a>
+    const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const [sectionInView, setSectionInView] = useState({
+        section1: false,
+        section2: false,
+        section3: false,
+    });
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    const sectionId = entry.target.id;
+                    if (entry.isIntersecting) {
+                        setSectionInView((prev) => ({
+                            ...prev,
+                            [sectionId]: true,
+                        }));
+                    } else {
+                        setSectionInView((prev) => ({
+                            ...prev,
+                            [sectionId]: false,
+                        }));
+                    }
+                });
+            },
+            { threshold: 0.5 } // Adjust threshold as needed
+        );
+
+        sectionRefs.current.forEach((section) => {
+            if (section) observer.observe(section);
+        });
+
+        return () => {
+            sectionRefs.current.forEach((section) => {
+                if (section) observer.unobserve(section);
+            });
+        };
+    }, []);
+
+    return (
+        <div className="h-screen snap-y snap-mandatory overflow-y-scroll">
+            <LandingNavbar />
+            <div
+                id="section1"
+                ref={(el) => { sectionRefs.current[0] = el; }}
+                className="section snap-start h-screen"
+            >
+                <Section1 inView={sectionInView.section1} />
+            </div>
+            <div
+                id="section2"
+                ref={(el) => { sectionRefs.current[1] = el; }}
+                className="section snap-start h-screen"
+                style={{ background: 'rgba(0,1,0,255)' }}
+            >
+                <Section2 inView={sectionInView.section2} />
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default HomePage;

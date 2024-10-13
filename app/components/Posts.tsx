@@ -85,7 +85,7 @@ const PostList: React.FC<{ userEmail: string | null }> = ({ userEmail }) => {
         <div>You are all caught up</div>
       ) : (
         posts.map((post) => (
-          <div key={post.id} className="bg-white shadow-md rounded-lg p-4 w-80 hover:shadow-lg transition-shadow duration-200">
+          <div key={post.id} className="bg-white shadow-md rounded-lg p-4 w-100 hover:shadow-lg transition-shadow duration-200">
             <h2 className="text-lg font-semibold">{post.author?.username}</h2>
             <p className="mt-2 text-gray-700">{post.content}</p>
             {post.imageUrl && <img src={post.imageUrl} alt="Post" className="mt-2 rounded-md" />}

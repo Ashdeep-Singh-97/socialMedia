@@ -41,14 +41,18 @@ const SignInForm: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center" 
-      style={{ 
-        backgroundImage: `url('/images/gradient.jpg')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}>
-      <div className="max-w-md w-full p-8 bg-white shadow-md rounded-lg">
+    <div className="h-screen flex items-center justify-center" >
+      <video
+                className="absolute top-0 left-0 w-full h-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+            >
+                <source src="/Globe.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+            </video>
+      <div className="max-w-md w-full p-8 bg-white shadow-md rounded-lg z-10">
         {error && <ErrorCard message={error} onClose={() => setError(null)} />}
         <h2 className="text-2xl font-bold mb-6">Sign In</h2>
         <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>

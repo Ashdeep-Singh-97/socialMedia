@@ -70,7 +70,7 @@ const CreatePost = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 bg-white rounded-lg shadow-md">
+        <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 bg-white rounded-lg shadow-md mt-24">
             <h2 className="text-xl font-semibold mb-4">Create a Post</h2>
             <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">Content:</label>

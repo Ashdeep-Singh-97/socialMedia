@@ -18,18 +18,25 @@ const UserHomePage: React.FC = () => {
   if (email === null) {
     // Email is not yet loaded or does not exist
     return (
-      <div className="p-8">
+      <div className="p-8 mt-20 text-white">
         <h1 className="text-2xl font-bold">Error</h1>
         <p className="text-lg">User information is missing. Please log in again.</p>
-        <a href="/" className="text-indigo-600 hover:underline">Sign In</a>
+        <a
+          href="/signin"
+          className="inline-block text-center text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded transition duration-200"
+          style={{ whiteSpace: 'nowrap' }} // Ensures "Sign Up" stays on the same line
+        >
+          Sign In
+        </a>
       </div>
     );
-  }
+}
+
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">Welcome, {username}</h1>
-      <p className="text-lg">Your email: {email}</p>
+    <div className="p-8 mt-24">
+      <h1 className="text-2xl font-bold text-white">Welcome, {username}</h1>
+      <p className="text-lg text-white">Your email: {email}</p>
       <PostList userEmail={email} /> {/* Include the PostList component here */}
     </div>
   );

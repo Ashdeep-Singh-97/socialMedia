@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.1",
     "@prisma/client": "^5.19.1",
     "@types/bcrypt": "^5.0.2",
     "axios": "^1.7.7",
@@ -16,6 +17,7 @@
     "busboy": "^1.6.0",
     "cloudinary": "^2.5.0",
     "form-data": "^4.0.0",
+    "gsap": "^3.12.5",
     "next": "14.2.8",
     "next-cloudinary": "^6.13.0",
     "prisma": "^5.19.1",

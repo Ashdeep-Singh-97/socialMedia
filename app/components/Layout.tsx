@@ -1,7 +1,7 @@
 // components/Layout.tsx
 import { ReactNode } from 'react';
 import Navbar from './Navbar'; // Ensure the correct path to Navbar component
-import Link from 'next/link';
+import Footer from './Footer';
 
 interface LayoutProps {
   children: ReactNode; // Defines the type for children prop
@@ -10,18 +10,14 @@ interface LayoutProps {
 
 export default function Layout({ children, isLoggedIn }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" style={{background : 'rgba(0,1,0,255)'}}>
       <header>
         <Navbar isLoggedIn={isLoggedIn} /> {/* Pass true/false based on authentication status */}
       </header>
       <main className="flex-1 p-4">
         {children} {/* Render the content passed as children */}
       </main>
-      <footer className="bg-pink-400 text-white p-4 text-center">
-        <Link href="/guest/home" className="bg-pink-400 hover:text-pink-800 p-4 m-4">
-          Footer
-        </Link>
-      </footer>
+      <Footer />
     </div>
   );
 }
