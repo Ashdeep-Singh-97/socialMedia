@@ -3,11 +3,8 @@ import { PrismaClient } from "@prisma/client";
 const client = new PrismaClient();
 
 export async function POST(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const { userId } = await req.json();
-
-  const searchTerm = searchParams.get("searchTerm");
-  console.log(searchTerm);
+  const { userId, searchTerm } = await req.json();
+  // console.log(searchTerm);
   if (!searchTerm) {
     return new Response(JSON.stringify({ error: "Search term is required" }), {
       status: 400,

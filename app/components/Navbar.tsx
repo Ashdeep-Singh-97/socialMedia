@@ -84,6 +84,11 @@ const Navbar = ({ isLoggedIn: initialLoginStatus }: NavbarProps) => {
               </Link>
             </li>
             <li>
+              <Link href="/user/chat" onClick={handleClick} className="text-black hover:text-pink-800">
+                Chat
+              </Link>
+            </li>
+            <li>
               <Link href="/user/post" onClick={handleClick} className="text-black hover:text-pink-800">
                 Post
               </Link>

@@ -51,7 +51,7 @@ const Sidebar: React.FC = () => {
     }, [userId, fetchFriends]); // Added fetchFriends to the dependency array
 
     return (
-        <div className="w-64 border-r border-gray-300 p-4">
+        <div className="w-64 border-r border-gray-300 p-4 pt-20 bg-white">
             <h2 className="text-2xl font-semibold mb-4">Friends</h2>
             {loadingFriends ? (
                 <p>Loading friends...</p>

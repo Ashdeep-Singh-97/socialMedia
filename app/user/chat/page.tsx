@@ -138,7 +138,7 @@ export default function Chat() {
     const isSendDisabled = isBlocked || (isBlockingUser && userId !== friendId);
 
     return (
-        <div className="flex h-screen">
+        <div className="flex h-screen pt-20">
             <Sidebar />
             <div className="flex-1 flex flex-col p-6 bg-gray-100">
                 <div className="flex justify-between items-center mb-4">

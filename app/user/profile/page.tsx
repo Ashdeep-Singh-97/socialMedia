@@ -94,6 +94,8 @@ export default function ProfilePage() {
                         src={profileImage}
                         alt="Profile"
                         className="w-32 h-32 rounded-full object-cover mr-4"
+                        width={128} // Set fixed width
+                        height={128} // Set fixed height
                     />
                 ) : (
                     <div className="w-32 h-32 rounded-full bg-gray-200 mr-4"></div>
@@ -124,6 +126,9 @@ export default function ProfilePage() {
                                 src={post.imageUrl}
                                 alt="Post"
                                 className="mt-2 w-full h-auto rounded-md"
+                                width={500} // Set default width
+                                height={300} // Set default height
+                                layout="responsive" // Ensures responsive behavior
                             />
                         )}
                         <p className="text-gray-500 text-sm mt-2">{new Date(post.createdAt).toLocaleString()}</p>

@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function clearDatabase() {
     try {
-        // await prisma.friendship.deleteMany({});
+        await prisma.friendship.deleteMany({});
         // await prisma.user.deleteMany({});
         // await prisma.post.deleteMany({});
         await prisma.block.deleteMany({});

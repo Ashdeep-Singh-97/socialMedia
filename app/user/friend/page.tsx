@@ -83,7 +83,7 @@ export default function FriendPage() {
             setNoMatches(false);
             return;
         }
-
+        // console.log("hi bidu ", searchTerm);
         try {
             const response = await axios.post<Friend[]>('/api/auth/search', {
                 searchTerm,
@@ -97,18 +97,26 @@ export default function FriendPage() {
     };
 
     const sendFriendRequest = async (receiverId: number) => {
+        // Check if the user is already friends with the receiver
+        const isAlreadyFriends = friends.some(friend => friend.id === receiverId);
+        
+        if (isAlreadyFriends) {
+            alert('You are already friends with this user.');
+            return;
+        }
+    
         try {
             await axios.post('/api/auth/sendRequest', {
                 userId,
                 receiverId,
             });
-
+    
             setSuggestions(prevSuggestions =>
                 prevSuggestions.map(friend =>
                     friend.id === receiverId ? { ...friend, requestStatus: 'pending' } : friend
                 )
             );
-
+    
             alert('Friend request sent!');
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response && error.response.status === 400) {
@@ -181,7 +189,7 @@ export default function FriendPage() {
                     placeholder="Search for friends"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border border-gray-300 p-2 rounded-lg w-full"
+                    className="border border-gray-300 p-2 rounded-lg w-full text-black"
                 />
                 <button
                     onClick={handleSearch}
