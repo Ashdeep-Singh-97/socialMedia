@@ -99,12 +99,12 @@ const PostList: React.FC<PostListProps> = ({ userEmail }) => {
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="flex flex-wrap justify-center gap-4 p-4">
+    <div className="flex flex-col justify-center items-center gap-4 p-4">
       {posts.length === 0 ? (
         <div>You are all caught up</div>
       ) : (
         posts.map((post) => (
-          <div key={post.id} className="bg-white shadow-md rounded-lg p-4 w-100 hover:shadow-lg transition-shadow duration-200">
+          <div key={post.id} className="bg-white shadow-md rounded-lg p-4 w-1/2 hover:shadow-lg transition-shadow duration-200">
             <h2 className="text-lg font-semibold">{post.author?.username}</h2>
             <p className="mt-2 text-gray-700">{post.content}</p>
             {post.imageUrl && <Image src={post.imageUrl} alt="Post" className="mt-2 rounded-md" width={800} height={300} />}
