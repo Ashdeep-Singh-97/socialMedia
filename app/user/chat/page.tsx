@@ -134,7 +134,6 @@ const Chat: React.FC = () => {
     };
 
     const isSendDisabled = isBlocked || (isBlockingUser && userId !== friendId);
-    const isUserBlocked = isBlocked && userId === friendId; // Check if the current user is blocked
 
     return (
         <div className="flex h-screen">

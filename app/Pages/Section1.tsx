@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import gsap from 'gsap';
 
 interface SectionProps {
@@ -8,6 +8,8 @@ interface SectionProps {
 }
 
 const Section1: React.FC<SectionProps> = ({ inView }) => {
+    const [isLowerVisible, setLowerVisible] = useState(true); // State to control visibility of .lower
+
     useEffect(() => {
         if (inView) {
             // Trigger animations when the section comes into view
@@ -26,7 +28,7 @@ const Section1: React.FC<SectionProps> = ({ inView }) => {
                 duration: 3,
                 delay: 3,
                 onComplete: () => {
-                    gsap.set('.lower', { display: 'none' });
+                    setLowerVisible(false); // Set state to hide the lower div
                 }
             });
         }
@@ -47,7 +49,9 @@ const Section1: React.FC<SectionProps> = ({ inView }) => {
             <div className="relative z-20 w-full h-full">
                 <div className="absolute left-0 w-full h-1/2 bg-transparent">
                     <div className="absolute bottom-3/4 left-0 w-full h-[100vh] bg-white skew-y-6"></div>
-                    <div className="absolute lower opacity-100 left-0 w-full h-[100vh] bg-white skew-y-6"></div>
+                    {isLowerVisible && ( // Render .lower only if visible
+                        <div className="absolute lower opacity-100 left-0 w-full h-[100vh] bg-white skew-y-6"></div>
+                    )}
                 </div>
                 <div className="relative z-30 flex flex-col justify-center items-center mt-40 text-center">
                     <h1 className="head text-gray-800 text-6xl">Let's Connect</h1>

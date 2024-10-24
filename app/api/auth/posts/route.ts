@@ -1,10 +1,8 @@
-// pages/api/posts/index.ts
-
 import { PrismaClient } from "@prisma/client";
 
 const client = new PrismaClient();
 
-export async function GET(req: Request) {
+export async function GET() { // Removed 'req' parameter
   try {
     const posts = await client.post.findMany({
       include: {

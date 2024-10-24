@@ -1,6 +1,13 @@
-// components/CommentsPanel.tsx
-
 import React, { useEffect, useState } from 'react';
+
+// Define the structure of a comment
+interface Comment {
+  id: number;
+  content: string;
+  author: {
+    username: string;
+  };
+}
 
 interface CommentsPanelProps {
   postId: number;
@@ -8,7 +15,8 @@ interface CommentsPanelProps {
 }
 
 const CommentsPanel: React.FC<CommentsPanelProps> = ({ postId, onClose }) => {
-  const [comments, setComments] = useState<any[]>([]);
+  // Use the Comment type for state
+  const [comments, setComments] = useState<Comment[]>([]);
 
   useEffect(() => {
     const fetchComments = async () => {
