@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 
@@ -30,16 +30,10 @@ export default function FriendPage() {
         }
     }, []);
 
-    useEffect(() => {
-        if (userId) {
-            fetchFriends();
-            fetchFriendRequests();
-        } else {
-            console.error('User ID is not available.');
-        }
-    }, [userId]);
+    // Use useCallback to memoize fetchFriends and fetchFriendRequests
+    const fetchFriends = useCallback(async () => {
+        if (!userId) return; // Prevent unnecessary API call if userId is null
 
-    const fetchFriends = async () => {
         try {
             const response = await axios.get<Friend[]>('/api/auth/friends', {
                 params: { userId }
@@ -50,9 +44,11 @@ export default function FriendPage() {
         } finally {
             setLoadingFriends(false);
         }
-    };
+    }, [userId]);
 
-    const fetchFriendRequests = async () => {
+    const fetchFriendRequests = useCallback(async () => {
+        if (!userId) return; // Prevent unnecessary API call if userId is null
+
         try {
             const response = await axios.get<{ id: number; senderUsername: string }[]>('/api/auth/friend-requests', {
                 params: { userId }
@@ -70,7 +66,16 @@ export default function FriendPage() {
         } finally {
             setLoadingRequests(false);
         }
-    };
+    }, [userId]);
+
+    useEffect(() => {
+        if (userId) {
+            fetchFriends();
+            fetchFriendRequests();
+        } else {
+            console.error('User ID is not available.');
+        }
+    }, [userId, fetchFriends, fetchFriendRequests]); // Added fetchFriends and fetchFriendRequests to the dependency array
 
     const handleSearch = async () => {
         if (searchTerm.trim() === '') {
@@ -257,18 +262,28 @@ export default function FriendPage() {
                         {friendRequests.map((request) => (
                             <li key={request.id} className="flex justify-between p-2 border-b border-gray-200">
                                 <div className="flex items-center">
+                                    {request.profileImageUrl ? (
+                                        <Image
+                                            src={request.profileImageUrl}
+                                            alt={request.username}
+                                            className="w-8 h-8 rounded-full mr-2"
+                                            width={500} height={300}
+                                        />
+                                    ) : (
+                                        <div className="w-8 h-8 rounded-full bg-gray-300 mr-2" />
+                                    )}
                                     <span>{request.username}</span>
                                 </div>
                                 <div>
                                     <button
                                         onClick={() => acceptFriendRequest(request.id)}
-                                        className="px-3 py-1 bg-green-500 rounded-lg hover:bg-green-600 text-white"
+                                        className="px-3 py-1 bg-green-500 rounded-lg hover:bg-green-600 text-white mr-2"
                                     >
                                         Accept
                                     </button>
                                     <button
                                         onClick={() => rejectFriendRequest(request.id)}
-                                        className="ml-2 px-3 py-1 bg-red-500 rounded-lg hover:bg-red-600 text-white"
+                                        className="px-3 py-1 bg-red-500 rounded-lg hover:bg-red-600 text-white"
                                     >
                                         Reject
                                     </button>

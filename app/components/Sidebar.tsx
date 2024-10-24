@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react'; // Import useCallback
 import axios from 'axios';
 import Link from 'next/link';
 
@@ -26,7 +26,8 @@ const Sidebar: React.FC = () => {
         }
     }, []);
 
-    const fetchFriends = async () => {
+    // Wrap fetchFriends in useCallback to prevent re-creation on each render
+    const fetchFriends = useCallback(async () => {
         if (!userId) return; // Prevent unnecessary API call if userId is null
 
         try {
@@ -39,7 +40,7 @@ const Sidebar: React.FC = () => {
         } finally {
             setLoadingFriends(false);
         }
-    };
+    }, [userId]); // Add userId as a dependency
 
     useEffect(() => {
         if (userId) {
