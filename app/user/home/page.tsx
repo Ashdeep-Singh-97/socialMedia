@@ -9,10 +9,12 @@ const UserHomePage: React.FC = () => {
 
   useEffect(() => {
     // This will run only on the client side
-    const storedEmail = localStorage.getItem('email');
-    const storedUsername = localStorage.getItem('username');
-    setEmail(storedEmail);
-    setUsername(storedUsername);
+    if (typeof window !== 'undefined') {
+      const storedEmail = localStorage.getItem('email');
+      const storedUsername = localStorage.getItem('username');
+      setEmail(storedEmail);
+      setUsername(storedUsername);
+    }
   }, []);
 
   if (email === null) {
@@ -24,14 +26,13 @@ const UserHomePage: React.FC = () => {
         <a
           href="/signin"
           className="inline-block text-center text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded transition duration-200"
-          style={{ whiteSpace: 'nowrap' }} // Ensures "Sign Up" stays on the same line
+          style={{ whiteSpace: 'nowrap' }} // Ensures "Sign In" stays on the same line
         >
           Sign In
         </a>
       </div>
     );
-}
-
+  }
 
   return (
     <div className="p-8 mt-24">

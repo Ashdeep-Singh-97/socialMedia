@@ -11,11 +11,19 @@ interface Post {
     createdAt: string;
 }
 
-const ProfilePage = () => {
+export default function ProfilePage() {
     const [profileImage, setProfileImage] = useState<string | null>(null);
     const [posts, setPosts] = useState<Post[]>([]);
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const userId = localStorage.getItem('userId'); // Get user ID from local storage
+    const [userId, setUserId] = useState<string | null>(null); // State to hold user ID
+
+    useEffect(() => {
+        // This will run only on the client side
+        if (typeof window !== 'undefined') {
+            const storedUserId = localStorage.getItem('userId');
+            setUserId(storedUserId);
+        }
+    }, []);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -63,12 +71,13 @@ const ProfilePage = () => {
                 const imageUrl = data.secure_url;
                 setProfileImage(imageUrl);
                 
-                await axios.put(`/api/auth/profile`, { profileImageUrl: imageUrl }, {
-                    headers: {
-                        userId: userId // Send the user ID in headers
-                    }
-                });
-
+                if (userId) { // Check if userId is available
+                    await axios.put(`/api/auth/profile`, { profileImageUrl: imageUrl }, {
+                        headers: {
+                            userId // Send the user ID in headers
+                        }
+                    });
+                }
             } catch (error) {
                 console.error('Error uploading image:', error);
             }
@@ -81,7 +90,7 @@ const ProfilePage = () => {
 
             <div className="flex items-center mb-6">
                 {profileImage ? (
-                    < Image
+                    <Image
                         src={profileImage}
                         alt="Profile"
                         className="w-32 h-32 rounded-full object-cover mr-4"
@@ -111,7 +120,7 @@ const ProfilePage = () => {
                     <div key={post.id} className="p-4 border rounded-lg shadow-sm">
                         <p>{post.content}</p>
                         {post.imageUrl && (
-                            <img
+                            <Image
                                 src={post.imageUrl}
                                 alt="Post"
                                 className="mt-2 w-full h-auto rounded-md"
@@ -124,6 +133,4 @@ const ProfilePage = () => {
             </div>
         </div>
     );
-};
-
-export default ProfilePage;
+}

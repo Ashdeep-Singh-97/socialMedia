@@ -34,12 +34,14 @@ const HomePage: React.FC = () => {
             { threshold: 0.5 } // Adjust threshold as needed
         );
 
-        sectionRefs.current.forEach((section) => {
+        // Create a local copy of sectionRefs.current
+        const sections = sectionRefs.current;
+        sections.forEach((section) => {
             if (section) observer.observe(section);
         });
 
         return () => {
-            sectionRefs.current.forEach((section) => {
+            sections.forEach((section) => {
                 if (section) observer.unobserve(section);
             });
         };

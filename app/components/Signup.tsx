@@ -1,4 +1,3 @@
-// pages/sign-up.tsx
 import React, { useState } from 'react';
 import ErrorCard from '../components/Error';
 import axios from 'axios';
@@ -31,10 +30,12 @@ const SignUpForm: React.FC = () => {
       const { token, userId } = response.data;
 
       if (token) {
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('email', email);
-        localStorage.setItem('username', username);
-        localStorage.setItem('userId',userId);
+        if (typeof window !== 'undefined') { // Check for client-side
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('email', email);
+          localStorage.setItem('username', username);
+          localStorage.setItem('userId', userId);
+        }
         router.push("/user/home");
       } else {
         setError('Token not received');
@@ -51,19 +52,17 @@ const SignUpForm: React.FC = () => {
   };
 
   return (
-    <div
-      className="h-screen flex items-center justify-center relative"
-    >
+    <div className="h-screen flex items-center justify-center relative">
       <video
-                className="absolute top-0 left-0 w-full h-full object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-            >
-                <source src="/Globe.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
+        className="absolute top-0 left-0 w-full h-full object-cover"
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source src="/Globe.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       <div className="w-full max-w-md p-8 bg-white shadow-md rounded-lg z-20">
         {error && <ErrorCard message={error} onClose={() => setError(null)} />}
         <h2 className="text-2xl font-bold mb-6">Sign Up</h2>

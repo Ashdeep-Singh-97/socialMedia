@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import axios from 'axios';
 
 // Ensure environment variables are defined
@@ -18,6 +18,15 @@ if (!UPLOAD_PRESET) {
 const CreatePost = () => {
     const [content, setContent] = useState<string>('');
     const [image, setImage] = useState<File | null>(null);
+    const [authorId, setAuthorId] = useState<string | null>(null);
+
+    useEffect(() => {
+        // This will run only on the client side
+        if (typeof window !== 'undefined') {
+            const storedUserId = localStorage.getItem('userId');
+            setAuthorId(storedUserId);
+        }
+    }, []);
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -56,14 +65,18 @@ const CreatePost = () => {
                 return;
             }
         }
+
         try {
             await axios.post('/api/auth/post', {
                 content,
-                authorId: localStorage.getItem('userId') || '',
+                authorId: authorId || '', // Use the state variable instead of localStorage
                 imageUrl: uploadedImageUrl,
             });
 
             console.log('Post created successfully');
+            // Optionally reset the form
+            setContent('');
+            setImage(null);
         } catch (error) {
             console.error('Error creating post:', error);
         }

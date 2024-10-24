@@ -1,4 +1,3 @@
-// components/Sidebar.tsx
 "use client";
 
 import { useEffect, useState } from 'react';
@@ -17,17 +16,19 @@ export interface Friend {
 const Sidebar: React.FC = () => {
     const [friends, setFriends] = useState<Friend[]>([]);
     const [loadingFriends, setLoadingFriends] = useState<boolean>(true);
-    const userId = localStorage.getItem('userId');
+    const [userId, setUserId] = useState<string | null>(null); // Use state for userId
 
     useEffect(() => {
-        if (userId) {
-            fetchFriends();
-        } else {
-            console.error('User ID is not available.');
+        // Check for userId in localStorage
+        if (typeof window !== 'undefined') {
+            const id = localStorage.getItem('userId');
+            setUserId(id);
         }
-    }, [userId]);
+    }, []);
 
     const fetchFriends = async () => {
+        if (!userId) return; // Prevent unnecessary API call if userId is null
+
         try {
             const response = await axios.get(`/api/auth/friends`, {
                 params: { userId }
@@ -39,6 +40,14 @@ const Sidebar: React.FC = () => {
             setLoadingFriends(false);
         }
     };
+
+    useEffect(() => {
+        if (userId) {
+            fetchFriends();
+        } else {
+            console.error('User ID is not available.');
+        }
+    }, [userId, fetchFriends]); // Added fetchFriends to the dependency array
 
     return (
         <div className="w-64 border-r border-gray-300 p-4">

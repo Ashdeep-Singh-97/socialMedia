@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // Import useRouter for navigation
@@ -9,15 +9,18 @@ interface NavbarProps {
   isLoggedIn: boolean;
 }
 
-const Navbar = ({ isLoggedIn }: NavbarProps) => {
+const Navbar = ({ isLoggedIn: initialLoginStatus }: NavbarProps) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(initialLoginStatus);
   const [showAlert, setShowAlert] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     // Check if the user is logged in by verifying localStorage
-    const token = localStorage.getItem('authToken');
-    if (!token) {
-      isLoggedIn = false;
+    const token = typeof window !== 'undefined' ? localStorage.getItem('authToken') : null;
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
     }
   }, []);
 
@@ -35,10 +38,13 @@ const Navbar = ({ isLoggedIn }: NavbarProps) => {
   const handleLogout = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
     // Clear user data from localStorage
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('email');
-    localStorage.removeItem('username');
-    localStorage.removeItem('userId');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('email');
+      localStorage.removeItem('username');
+      localStorage.removeItem('userId');
+    }
+    setIsLoggedIn(false); // Update login status
     router.push('/'); // Redirect to the home or login page
   };
 

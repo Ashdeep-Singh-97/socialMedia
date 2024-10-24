@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-  "build": "next build && npm run prisma:generate",
-  "start": "next start",
-  "lint": "next lint",
-  "prisma:generate": "prisma generate"
+    "build": "next build && npm run prisma:generate",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@gsap/react": "^2.1.1",

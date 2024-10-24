@@ -22,10 +22,12 @@ const SignInForm: React.FC = () => {
       const { token, username, email: userEmail, userId } = response.data;
 
       if (token) {
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('username', username);
-        localStorage.setItem('email', userEmail);
-        localStorage.setItem('userId',userId);
+        if (typeof window !== 'undefined') { // Check for client-side
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('username', username);
+          localStorage.setItem('email', userEmail);
+          localStorage.setItem('userId', userId);
+        }
         router.push("/user/home");
       } else {
         setError('Token not received');
@@ -41,17 +43,17 @@ const SignInForm: React.FC = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center" >
+    <div className="h-screen flex items-center justify-center">
       <video
-                className="absolute top-0 left-0 w-full h-full object-cover"
-                autoPlay
-                loop
-                muted
-                playsInline
-            >
-                <source src="/Globe.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
+        className="absolute top-0 left-0 w-full h-full object-cover"
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source src="/Globe.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       <div className="max-w-md w-full p-8 bg-white shadow-md rounded-lg z-10">
         {error && <ErrorCard message={error} onClose={() => setError(null)} />}
         <h2 className="text-2xl font-bold mb-6">Sign In</h2>

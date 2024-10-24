@@ -9,13 +9,19 @@ interface Message {
     senderId: number;
 }
 
-const Chat: React.FC = () => {
-    const userId = parseInt(localStorage.getItem('userId') || '0');
+export default function Chat() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState<string>('');
     const [friendId, setFriendId] = useState<number | null>(null);
     const [isBlocked, setIsBlocked] = useState<boolean>(false);
     const [isBlockingUser, setIsBlockingUser] = useState<boolean>(false);
+    const [userId, setUserId] = useState<number | null>(null);
+
+    // Fetch userId from localStorage in the client environment
+    useEffect(() => {
+        const storedUserId = localStorage.getItem('userId');
+        setUserId(storedUserId ? parseInt(storedUserId) : null);
+    }, []);
 
     // Fetch friendId from URL parameters
     useEffect(() => {
@@ -28,12 +34,12 @@ const Chat: React.FC = () => {
 
     useEffect(() => {
         const fetchFriendshipStatus = async () => {
-            if (friendId === null) return;
-    
+            if (friendId === null || userId === null) return;
+
             try {
                 const response = await fetch(`/api/auth/friendshipStatus?userId=${userId}&friendId=${friendId}`);
                 const data = await response.json();
-                
+
                 // Set the state based on the API response
                 setIsBlocked(data.isBlocked || data.isBlockedByUser);
                 setIsBlockingUser(data.isBlockingUser);
@@ -41,22 +47,14 @@ const Chat: React.FC = () => {
                 console.error('Error fetching friendship status:', error);
             }
         };
-    
+
         fetchFriendshipStatus();
     }, [friendId, userId]);
-    
-    // Debugging for state values
-    useEffect(() => {
-        console.log('Updated Is Blocked:', isBlocked);
-        console.log('Updated Is Blocking User:', isBlockingUser);
-    }, [isBlocked, isBlockingUser]);
-    
-    
 
     // Fetch chat history whenever friendId changes
     useEffect(() => {
         const fetchChatHistory = async () => {
-            if (friendId === null || isBlocked) return;
+            if (friendId === null || isBlocked || userId === null) return;
 
             try {
                 const response = await fetch(`/api/auth/history?userId=${userId}&friendId=${friendId}`);
@@ -72,21 +70,25 @@ const Chat: React.FC = () => {
     }, [friendId, userId, isBlocked]);
 
     const handleSend = async () => {
-        if (!input.trim() || isBlocked) return;
+        if (!input.trim() || isBlocked || userId === null) return;
 
         const newMessage: Message = { id: Date.now(), content: input, senderId: userId };
         setMessages(prevMessages => [...prevMessages, newMessage]);
         setInput('');
 
-        await fetch('/api/auth/sendMessage', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ content: input, senderId: userId, receiverId: friendId }),
-        });
+        try {
+            await fetch('/api/auth/sendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: input, senderId: userId, receiverId: friendId }),
+            });
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
     };
 
     const handleBlock = async () => {
-        if (friendId === null) return;
+        if (friendId === null || userId === null) return;
 
         try {
             const response = await fetch('/api/auth/blockUser', {
@@ -110,7 +112,7 @@ const Chat: React.FC = () => {
     };
 
     const handleUnblock = async () => {
-        if (friendId === null) return;
+        if (friendId === null || userId === null) return;
 
         try {
             const response = await fetch('/api/auth/unblockUser', {
@@ -158,8 +160,7 @@ const Chat: React.FC = () => {
                         </button>
                     )}
                 </div>
-                {/* Show blocked message only if the user is blocked by the current user */}
-                {isBlocked && isBlockingUser &&(
+                {isBlocked && isBlockingUser && (
                     <div className="mb-4 text-red-500">User blocked. You can unblock them.</div>
                 )}
                 <div className="flex-1 overflow-y-auto border border-gray-300 rounded-lg p-4 bg-white mb-4">
@@ -193,8 +194,4 @@ const Chat: React.FC = () => {
             </div>
         </div>
     );
-    
-    
-};
-
-export default Chat;
+}

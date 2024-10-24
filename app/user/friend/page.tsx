@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Link from 'next/link';
 import Image from 'next/image';
 
 export interface Friend {
@@ -13,7 +12,7 @@ export interface Friend {
     requestStatus?: 'none' | 'pending' | 'sent';
 }
 
-const FriendPage = () => {
+export default function FriendPage() {
     const [friends, setFriends] = useState<Friend[]>([]);
     const [friendRequests, setFriendRequests] = useState<Friend[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -21,8 +20,15 @@ const FriendPage = () => {
     const [loadingFriends, setLoadingFriends] = useState<boolean>(true);
     const [loadingRequests, setLoadingRequests] = useState<boolean>(true);
     const [noMatches, setNoMatches] = useState<boolean>(false);
+    const [userId, setUserId] = useState<string | null>(null);
 
-    const userId = localStorage.getItem('userId');
+    useEffect(() => {
+        // Check if window is defined to access localStorage
+        if (typeof window !== 'undefined') {
+            const storedUserId = localStorage.getItem('userId');
+            setUserId(storedUserId);
+        }
+    }, []);
 
     useEffect(() => {
         if (userId) {
@@ -217,70 +223,61 @@ const FriendPage = () => {
                     <ul className="border border-gray-300 rounded-lg">
                         {friends.map((friend) => (
                             <li key={friend.id} className="flex justify-between p-2 border-b border-gray-200">
-                                <span>{friend.username} - {friend.email}</span>
+                                <div className="flex items-center">
+                                    {friend.profileImageUrl ? (
+                                        <Image
+                                            src={friend.profileImageUrl}
+                                            alt={friend.username}
+                                            className="w-8 h-8 rounded-full mr-2"
+                                            width={500} height={300}
+                                        />
+                                    ) : (
+                                        <div className="w-8 h-8 rounded-full bg-gray-300 mr-2" />
+                                    )}
+                                    <span>{friend.username}</span>
+                                </div>
+                                <button
+                                    onClick={() => unfriend(friend.id)}
+                                    className="px-3 py-1 bg-red-500 rounded-lg hover:bg-red-600 text-white"
+                                >
+                                    Unfriend
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </>
+            )}
+
+            {loadingRequests ? (
+                <p>Loading friend requests...</p>
+            ) : (
+                <>
+                    <h2 className="text-2xl font-semibold mb-2">Friend Requests</h2>
+                    <ul className="border border-gray-300 rounded-lg">
+                        {friendRequests.map((request) => (
+                            <li key={request.id} className="flex justify-between p-2 border-b border-gray-200">
+                                <div className="flex items-center">
+                                    <span>{request.username}</span>
+                                </div>
                                 <div>
-                                    <Link href={`/user/chat?friendId=${friend.id}`} className="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 mr-2">
-                                        Chat
-                                    </Link>
                                     <button
-                                        onClick={() => unfriend(friend.id)}
-                                        className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                        onClick={() => acceptFriendRequest(request.id)}
+                                        className="px-3 py-1 bg-green-500 rounded-lg hover:bg-green-600 text-white"
                                     >
-                                        Unfriend
+                                        Accept
+                                    </button>
+                                    <button
+                                        onClick={() => rejectFriendRequest(request.id)}
+                                        className="ml-2 px-3 py-1 bg-red-500 rounded-lg hover:bg-red-600 text-white"
+                                    >
+                                        Reject
                                     </button>
                                 </div>
                             </li>
                         ))}
                     </ul>
-
-                    {loadingRequests ? (
-                        <p>Loading friend requests...</p>
-                    ) : (
-                        <>
-                            <h2 className="text-2xl font-semibold mb-2 mt-4">Friend Requests</h2>
-                            {friendRequests.length === 0 ? (
-                                <p>No friend requests.</p>
-                            ) : (
-                                <ul className="border border-gray-300 rounded-lg">
-                                    {friendRequests.map((request) => (
-                                        <li key={request.id} className="flex justify-between p-2 border-b border-gray-200">
-                                            <div className="flex items-center">
-                                                {request.profileImageUrl ? (
-                                                    <Image
-                                                        src={request.profileImageUrl}
-                                                        alt={request.username}
-                                                        className="w-8 h-8 rounded-full mr-2"
-                                                        width={500} height={300}
-                                                    />
-                                                ) : (
-                                                    <div className="w-8 h-8 rounded-full bg-gray-300 mr-2" />
-                                                )}
-                                                <span>{request.username}</span>
-                                            </div>
-                                            <div>
-                                                <button
-                                                    onClick={() => acceptFriendRequest(request.id)}
-                                                    className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 mr-2"
-                                                >
-                                                    Accept
-                                                </button>
-                                                <button
-                                                    onClick={() => rejectFriendRequest(request.id)}
-                                                    className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                                                >
-                                                    Reject
-                                                </button>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </>
-                    )}
                 </>
             )}
         </div>
     );
-};
-
-export default FriendPage;
+}
