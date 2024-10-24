@@ -2,6 +2,7 @@
 
 import { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
+import Image from 'next/image';
 
 interface Post {
     id: number;
@@ -80,7 +81,7 @@ const ProfilePage = () => {
 
             <div className="flex items-center mb-6">
                 {profileImage ? (
-                    <img
+                    < Image
                         src={profileImage}
                         alt="Profile"
                         className="w-32 h-32 rounded-full object-cover mr-4"

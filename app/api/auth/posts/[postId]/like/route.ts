@@ -11,7 +11,7 @@ export async function POST(req: NextRequest, { params }: { params: { postId: str
   }
 
   try {
-    // Fetch the user ID based on the email
+    // Fetch the user based on the email
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest, { params }: { params: { postId: str
       return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
 
-    const existingLike = post.likes.find(like => like.userId === user.id);
+    const existingLike = post.likes.find((like) => like.userId === user.id);
     if (existingLike) {
       return NextResponse.json({ message: 'You have already liked this post.' }, { status: 400 });
     }
@@ -43,8 +43,12 @@ export async function POST(req: NextRequest, { params }: { params: { postId: str
     });
 
     return NextResponse.json({ message: 'Post liked successfully' });
-  } catch (error : any) {
-    console.error('Error liking the post:', error);
-    return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error liking the post:', error);
+      return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ message: 'Unknown error occurred' }, { status: 500 });
+    }
   }
 }

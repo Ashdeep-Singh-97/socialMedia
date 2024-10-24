@@ -1,9 +1,23 @@
-// validateUser.ts
-
 import { signupSchema, signinSchema } from './zod'; // Adjust the path as needed
 import { z } from 'zod';
 
-export async function validateUser(body: any) {
+// Define a type for the validation body
+type SignupBody = {
+  action: 'signup';
+  username: string; // Add other fields based on your signup schema
+  email: string;
+  password: string;
+};
+
+type SigninBody = {
+  action: 'signin';
+  email: string;
+  password: string;
+};
+
+type ValidateUserBody = SignupBody | SigninBody;
+
+export async function validateUser(body: ValidateUserBody) {
   try {
     // Determine the action and validate accordingly
     if (body.action === 'signup') {

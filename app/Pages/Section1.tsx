@@ -11,7 +11,7 @@ const Section1: React.FC<SectionProps> = ({ inView }) => {
     useEffect(() => {
         if (inView) {
             // Trigger animations when the section comes into view
-            gsap.fromTo('.head', {
+            gsap.fromTo(".head", {
                 opacity: 0,
             }, {
                 opacity: 1,
@@ -19,7 +19,7 @@ const Section1: React.FC<SectionProps> = ({ inView }) => {
                 delay: 1,
             });
 
-            gsap.fromTo('.lower', {
+            gsap.fromTo(".lower", {
                 y: 0,
             }, {
                 y: 2000,

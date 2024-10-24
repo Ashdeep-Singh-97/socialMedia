@@ -1,5 +1,7 @@
 "use client"
 
+import Image from "next/image";
+
 const Navbar = () => {
 
 
@@ -11,10 +13,11 @@ const Navbar = () => {
             >
                 {/* Left part with the logo and "Claude" text */}
                 <div className="col-start-2 col-span-2 flex items-center font-stratford">
-                    <img
+                    < Image
                         src="/images/chat.svg"
                         alt="Claude Icon"
                         className="w-16 h-16 mr-2"
+                        width={500} height={300}
                     />
                     <div className="text-3xl text-black">Chatter G</div>
                 </div>

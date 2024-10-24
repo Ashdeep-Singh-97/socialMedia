@@ -38,8 +38,13 @@ export async function POST(req: NextRequest, { params }: { params: { postId: str
     });
 
     return NextResponse.json({ message: 'Comment added successfully' });
-  } catch (error : any) {
-    console.error('Error adding the comment:', error);
-    return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
+  } catch (error) {
+    // Type narrowing for `error`
+    if (error instanceof Error) {
+      console.error('Error adding the comment:', error);
+      return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
+    } else {
+      return NextResponse.json({ message: 'Unknown error occurred' }, { status: 500 });
+    }
   }
 }

@@ -66,11 +66,19 @@ export async function POST(req: Request) {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
-    } catch (error: any) {
-        console.error("Error accepting friend request:", error);
-        return new Response(JSON.stringify({ error: "Internal Server Error", details: error.message }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-        });
+    } catch (error) {
+        // Type narrowing for `error`
+        if (error instanceof Error) {
+            console.error("Error accepting friend request:", error);
+            return new Response(JSON.stringify({ error: "Internal Server Error", details: error.message }), {
+                status: 500,
+                headers: { "Content-Type": "application/json" },
+            });
+        } else {
+            return new Response(JSON.stringify({ error: "Unknown Error" }), {
+                status: 500,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
     }
 }

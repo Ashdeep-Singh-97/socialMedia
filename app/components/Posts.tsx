@@ -1,12 +1,26 @@
-// components/PostList.tsx
-
 import React, { useEffect, useState } from 'react';
 import CommentsPanel from './CommentsPanel'; // Ensure you import the CommentsPanel component
+import Image from 'next/image';
 
-const PostList: React.FC<{ userEmail: string | null }> = ({ userEmail }) => {
-  const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
+interface Post {
+  id: number;
+  author: {
+    username: string;
+  };
+  content: string;
+  imageUrl?: string;
+  likes: { id: number; userId: number }[];
+  comments: { id: number; content: string; authorId: number }[];
+}
+
+interface PostListProps {
+  userEmail: string | null;
+}
+
+const PostList: React.FC<PostListProps> = ({ userEmail }) => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null); // For the comments panel
 
   useEffect(() => {
@@ -16,10 +30,14 @@ const PostList: React.FC<{ userEmail: string | null }> = ({ userEmail }) => {
         if (!response.ok) {
           throw new Error("Failed to fetch posts.");
         }
-        const data = await response.json();
+        const data: Post[] = await response.json();
         setPosts(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('Unknown error');
+        }
         console.error(err);
       } finally {
         setLoading(false);
@@ -42,7 +60,7 @@ const PostList: React.FC<{ userEmail: string | null }> = ({ userEmail }) => {
         throw new Error("Failed to like the post.");
       }
       // Optionally update the local state after liking
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
     }
   };
@@ -64,7 +82,7 @@ const PostList: React.FC<{ userEmail: string | null }> = ({ userEmail }) => {
         throw new Error("Failed to comment on the post.");
       }
       // Optionally update the local state after commenting
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
     }
   };
@@ -89,7 +107,7 @@ const PostList: React.FC<{ userEmail: string | null }> = ({ userEmail }) => {
           <div key={post.id} className="bg-white shadow-md rounded-lg p-4 w-100 hover:shadow-lg transition-shadow duration-200">
             <h2 className="text-lg font-semibold">{post.author?.username}</h2>
             <p className="mt-2 text-gray-700">{post.content}</p>
-            {post.imageUrl && <img src={post.imageUrl} alt="Post" className="mt-2 rounded-md" />}
+            {post.imageUrl && <Image src={post.imageUrl} alt="Post" className="mt-2 rounded-md" width={800} height={300} />}
             <div className="mt-4 flex justify-between text-sm text-gray-500">
               <span>{post.likes.length} Likes</span>
               <span>{post.comments.length} Comments</span>

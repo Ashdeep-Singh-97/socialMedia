@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Link from 'next/link'; // Import Link from next/link
+import Link from 'next/link';
+import Image from 'next/image';
 
 export interface Friend {
     id: number;
@@ -34,7 +35,7 @@ const FriendPage = () => {
 
     const fetchFriends = async () => {
         try {
-            const response = await axios.get(`/api/auth/friends`, {
+            const response = await axios.get<Friend[]>('/api/auth/friends', {
                 params: { userId }
             });
             setFriends(response.data);
@@ -47,17 +48,16 @@ const FriendPage = () => {
 
     const fetchFriendRequests = async () => {
         try {
-            const response = await axios.get(`/api/auth/friend-requests`, {
+            const response = await axios.get<{ id: number; senderUsername: string }[]>('/api/auth/friend-requests', {
                 params: { userId }
             });
-            const mappedRequests = response.data.map((request: any) => ({
+            const mappedRequests: Friend[] = response.data.map(request => ({
                 id: request.id,
                 username: request.senderUsername,
                 email: '',
                 profileImageUrl: undefined,
                 requestStatus: 'pending',
             }));
-
             setFriendRequests(mappedRequests);
         } catch (error) {
             console.error('Error fetching friend requests:', error);
@@ -74,8 +74,9 @@ const FriendPage = () => {
         }
 
         try {
-            const response = await axios.post(`/api/auth/search?searchTerm=${searchTerm}`, {
-                userId: userId,
+            const response = await axios.post<Friend[]>('/api/auth/search', {
+                searchTerm,
+                userId,
             });
             setSuggestions(response.data);
             setNoMatches(response.data.length === 0);
@@ -98,8 +99,8 @@ const FriendPage = () => {
             );
 
             alert('Friend request sent!');
-        } catch (error: any) {
-            if (error.response && error.response.status === 400) {
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response && error.response.status === 400) {
                 alert(error.response.data.error);
             } else {
                 console.error("Unexpected error:", error);
@@ -161,7 +162,7 @@ const FriendPage = () => {
 
     return (
         <div className="max-w-4xl mx-auto p-6 mt-24 text-white">
-            <h1 className="text-3xl font-bold mb-4 '">Friends</h1>
+            <h1 className="text-3xl font-bold mb-4">Friends</h1>
 
             <div className="mb-6">
                 <input
@@ -185,10 +186,11 @@ const FriendPage = () => {
                         <li key={friend.id} className="flex justify-between p-2 border-b border-gray-200">
                             <div className="flex items-center">
                                 {friend.profileImageUrl ? (
-                                    <img
+                                    <Image
                                         src={friend.profileImageUrl}
                                         alt={friend.username}
                                         className="w-8 h-8 rounded-full mr-2"
+                                        width={500} height={300}
                                     />
                                 ) : (
                                     <div className="w-8 h-8 rounded-full bg-gray-300 mr-2" />
@@ -244,10 +246,11 @@ const FriendPage = () => {
                                         <li key={request.id} className="flex justify-between p-2 border-b border-gray-200">
                                             <div className="flex items-center">
                                                 {request.profileImageUrl ? (
-                                                    <img
+                                                    <Image
                                                         src={request.profileImageUrl}
                                                         alt={request.username}
                                                         className="w-8 h-8 rounded-full mr-2"
+                                                        width={500} height={300}
                                                     />
                                                 ) : (
                                                     <div className="w-8 h-8 rounded-full bg-gray-300 mr-2" />
