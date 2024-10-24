@@ -54,7 +54,7 @@ const Section1: React.FC<SectionProps> = ({ inView }) => {
                     )}
                 </div>
                 <div className="relative z-30 flex flex-col justify-center items-center mt-40 text-center">
-                    <h1 className="head text-gray-800 text-6xl">Let's Connect</h1>
+                    <h1 className="head text-gray-800 text-6xl">Let&apos;s Connect</h1> {/* Escape single quote */}
                 </div>
             </div>
             <div className="absolute top-0 left-0 w-full h-full bg-black/40 z-10"></div>
