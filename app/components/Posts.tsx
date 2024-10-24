@@ -60,6 +60,7 @@ const PostList: React.FC<{ userEmail: string | null }> = ({ userEmail }) => {
         body: JSON.stringify({ email: userEmail, content: comment }), // Send email and comment
       });
       if (!response.ok) {
+        console.log(response);
         throw new Error("Failed to comment on the post.");
       }
       // Optionally update the local state after commenting

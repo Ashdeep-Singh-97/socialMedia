@@ -4,6 +4,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import Section1 from './Pages/Section1';
 import Section2 from './Pages/Section2';
 import LandingNavbar from './components/LandingNavbar';
+require('dotenv').config();
+console.log(process.env.DATABASE_URL);
 
 const HomePage: React.FC = () => {
     const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
